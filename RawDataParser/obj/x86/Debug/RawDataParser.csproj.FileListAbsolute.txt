@@ -1,0 +1,9 @@
+E:\Work\RawDataParser\RawDataParser\bin\Debug\RawDataParser.exe
+E:\Work\RawDataParser\RawDataParser\bin\Debug\RawDataParser.pdb
+E:\Work\RawDataParser\RawDataParser\bin\Debug\DelaunayTriangulator.dll
+E:\Work\RawDataParser\RawDataParser\bin\Debug\FortuneVoronoi.dll
+E:\Work\RawDataParser\RawDataParser\bin\Debug\FortuneVoronoi.pdb
+E:\Work\RawDataParser\RawDataParser\bin\Debug\DelaunayTriangulator.pdb
+E:\Work\RawDataParser\RawDataParser\obj\x86\Debug\RawDataParser.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\RawDataParser\obj\x86\Debug\RawDataParser.exe
+E:\Work\RawDataParser\RawDataParser\obj\x86\Debug\RawDataParser.pdb

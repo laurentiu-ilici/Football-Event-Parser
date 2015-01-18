@@ -1,0 +1,5 @@
+E:\Work\RawDataParser\FortuneVoronoi\bin\Debug\FortuneVoronoi.dll
+E:\Work\RawDataParser\FortuneVoronoi\bin\Debug\FortuneVoronoi.pdb
+E:\Work\RawDataParser\FortuneVoronoi\obj\Debug\FortuneVoronoi.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\FortuneVoronoi\obj\Debug\FortuneVoronoi.dll
+E:\Work\RawDataParser\FortuneVoronoi\obj\Debug\FortuneVoronoi.pdb

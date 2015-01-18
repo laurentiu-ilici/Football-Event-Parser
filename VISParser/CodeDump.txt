@@ -1,0 +1,641 @@
+﻿  private Color calculateColor(Point target, List<Info> data)
+  {
+            int minDistance = int.MaxValue;
+            int minDistIndex = -1;
+
+            //0 Is the ball , we are not interested in that at the moment 
+            //17 is the referee we don't care about him either at this moment
+            for (int index = 1; index < data.Count; index++)
+            {
+                if (!(data[index] is Player))
+                    continue;
+                Point curPoint = new Point(
+                    this.relativePosX(data[index].XCoord), this.relativePosY(data[index].YCoord));
+                int curDist = this.distance(target, curPoint);
+                if (minDistance > curDist)
+                {
+                    minDistance = curDist;
+                    minDistIndex = index;
+                }
+            }
+            return data[minDistIndex].PlayerColor;
+  }
+
+ private string buildImage(Frame data, string outputFolderPath, List<Coords> edges = null, int confidence = -1, int edgeClusters = 5, string suffix = "", bool multiColor = false, int targetCenter = -1)
+        {
+            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(this.xLength, this.yLength);
+            Graphics g = Graphics.FromImage(bitmap);
+            SolidBrush brush = new SolidBrush(Color.White);
+            g.FillRectangle(brush, 0, 0, bitmap.Width, bitmap.Height);
+            for (int y = 0; y < bitmap.Height; y++)
+            {
+                for (int x = 0; x < bitmap.Width; x++)
+                {
+                    bitmap.SetPixel(x, y, this.calculateColor(new Point(x - xLength / 2 * xAxisStep, y - yLength / 2 * yAxisStep), data.Objects));
+                }
+            }
+            this.addObjectsToImage(g, data.Objects);
+            if (edges != null)
+            {
+
+                double max = edges.Max(edge => edge.Frequency);
+                double min = edges.Min(edge => edge.Frequency);
+                max = Math.Max(Math.Abs(max), Math.Abs(min));
+                foreach (var item in edges)
+                {
+                    if (!item.IsFrequencySet)
+                    {
+                        g.DrawLine(Pens.Black, this.relativePosX(data.Objects[item.Row + 1].XCoord),
+                                  this.relativePosY(data.Objects[item.Row + 1].YCoord),
+                                   this.relativePosX(data.Objects[item.Col + 1].XCoord),
+                                   this.relativePosY(data.Objects[item.Col + 1].YCoord));
+                        Rectangle strRect = new Rectangle(0, 0, 100, 20);
+                        if (confidence != -1)
+                            g.DrawString(confidence.ToString() + "/" + "13100", new Font("Tahoma", 8), brush, strRect);
+                    }
+                    else
+                    {
+                        //Warning if true will be removed :D
+                        if (true || item.Label == 1 && item.Team == 0)
+                        {
+                            Pen pen;
+                            if (multiColor == false)
+                            {
+
+                                pen = new Pen(item.Frequency > 0 ? Color.FromArgb((int)(255 * item.Frequency * 1 / max), Color.Black) :
+                                                                    Color.FromArgb((int)(255 * Math.Abs(item.Frequency) * 1 / max), Color.Red), 3);
+                            }
+                            else
+                            {
+
+                                pen = new Pen(Color.FromArgb((int)(255 * item.Frequency * 1 / max), this.edgeColorScheme[item.StrongestCluster]), 3);
+
+                            }
+                            if (item.StrongestCluster > 0 && item.StrongestCluster < 3)
+                                g.DrawLine(pen, this.relativePosX(data.Objects[item.Row + 1].XCoord),
+                                    this.relativePosY(data.Objects[item.Row + 1].YCoord),
+                                     this.relativePosX(data.Objects[item.Col + 1].XCoord),
+                                     this.relativePosY(data.Objects[item.Col + 1].YCoord));
+
+
+                        }
+                    }
+                }
+                Rectangle strRect2 = new Rectangle(0, 0, 100, 20);
+                if (confidence != -1)
+                    g.DrawString(confidence.ToString() + "/" + "13100", new Font("Tahoma", 8), brush, strRect2);
+                if (targetCenter != -1)
+                {
+                    brush.Color = this.clusterColorDict[targetCenter];
+                    g.DrawString("Center " + targetCenter.ToString(), new Font("Tahoma", 8), brush, strRect2);
+                }
+            }
+            bitmap.Save(outputFolderPath + "\\image" + data.FrameNumber.ToString() + suffix + ".bmp");
+            Console.WriteLine("Done building image {0}", data.FrameNumber.ToString());
+            if (this.ImageBuilt != null)
+                this.ImageBuilt.Invoke(string.Format("Done building image {0}", data.FrameNumber.ToString()));
+            return data.FrameNumber.ToString() + ",pictures/Center" + Math.Abs(targetCenter).ToString() + "/image" + data.FrameNumber.ToString() + suffix + ".bmp";
+        }
+
+		public void BuildClusterDiffImage(string dataPath, string clusterFilePath, string clusterHistogramPath, string statisticsFilePath, string outputFolderPath, int targetCenter, bool multiColor = false)
+        {
+            GraphExtractor extractor = new GraphExtractor();
+            List<Graph> graphs = extractor.ConvertStringToGraphs(dataPath, clusterFilePath);
+            Dictionary<string, Coords> edges = new Dictionary<string, Coords>();
+            Dictionary<string, Coords> stats = new Dictionary<string, Coords>();
+            DataReader reader = new DataReader(dataPath, 0);
+            List<Coords> rawFrequencys = reader.ReadEdgeHistogram(clusterHistogramPath);
+            List<Coords> rawStatistics = reader.ReadEdgeHistogram(statisticsFilePath, true);
+            foreach (var item in rawFrequencys)
+                edges.Add(item.ToString(), item);
+            foreach (var item in rawStatistics)
+                stats.Add(item.ToString(), item);
+            foreach (var item in edges)
+            {
+                if (multiColor)
+                {
+                    item.Value.StrongestCluster = stats[item.Value.ToString()].StrongestCluster;
+                    item.Value.Frequency = stats[item.Value.ToString()].Robustness;
+                }
+                else
+                    item.Value.Frequency = (stats[item.Value.ToString()].Frequency - item.Value.Frequency);/// stats[item.Value.ToString()].Robustness;
+
+            }
+
+            Frame mean = new Frame((int)graphs[0].TimeStamp, graphs[0].Nodes);
+            /*
+            for (int pid = 0; pid < 18; pid++)
+            {
+                Info meanInfo = null;
+                foreach (var item in graphs)
+                {
+                    if (meanInfo == null)
+                    {
+                        meanInfo = new Info();
+                        meanInfo = meanInfo.CopyObject(item.Nodes[pid]);
+                    }
+                    else
+                    {
+                        for (int index = 0; index < meanInfo.Data.Length; index++)
+                            meanInfo[index] += item.Nodes[pid][index];
+                    }
+                }
+                for (int index = 0; index < meanInfo.Data.Length; index++)
+                    meanInfo[index] /= graphs.Count;
+                mean.Add(meanInfo);
+            }
+            foreach (var item in mean)
+                item.Frame = graphs[0].Nodes[0].TimeStamp;*/
+            //  this.buildImage(mean, outputFolderPath, rawFrequencys, -1, 5, "Center" + targetCenter.ToString() + (multiColor == true ? "MultiColor" : ""), multiColor, targetCenter);
+            this.buildGridImage(mean, outputFolderPath, rawFrequencys, -1, 5, "Center" + targetCenter.ToString() + (multiColor == true ? "MultiColor" : "") + "Grid", multiColor, targetCenter);
+
+        }
+
+		public void BuildEdgeHistogram(string dataPath, string histogramPath, string outputFolderPath)
+        {
+            DataReader reader = new DataReader(dataPath, 1);
+            Graph graph = new Graph(reader.DataList[0].Objects, reader.ReadEdgeHistogram(histogramPath), reader.DataList[0].FrameNumber);
+            this.buildImage(reader.DataList[0], outputFolderPath, graph.Edges);
+        }
+		public static void BuildClusterDiffImages(string dataPath, ImageBuilder builder, int centers, bool multicolor)
+        {
+            for (int center = 0; center < centers; center++)
+            {
+                builder.BuildClusterDiffImage(dataPath, @"D:\Work\PythonWorkspace\Football\Clusters\Centers" + centers.ToString() + "Center" + center.ToString() + ".txt",
+                        @"D:\Work\PythonWorkspace\Football\Clusters\Centers" + centers.ToString() + "Center" + center.ToString() + "Histo.txt",
+                        @"D:\Work\PythonWorkspace\Football\Clusters\Centers" + centers.ToString() + "Statistics.txt", @"D:\Work\Football\Images", center, multicolor);
+                if (multicolor == true)
+                    break;
+            }
+
+        }
+
+		private string buildGridImage(Frame data, string outputFolderPath, List<Coords> edges = null, int confidence = -1, int edgeClusters = 5, string suffix = "", bool multiColor = false, int targetCenter = -1)
+        {
+            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(690, 690);
+            int rectWidth = 30;
+            Graphics g = Graphics.FromImage(bitmap);
+            SolidBrush brush = new SolidBrush(Color.White);
+            g.FillRectangle(brush, 0, 0, bitmap.Width, bitmap.Height);
+
+            if (edges != null)
+            {
+
+                double max = edges.Max(edge => edge.Frequency);
+                double min = edges.Min(edge => edge.Frequency);
+                max = Math.Max(Math.Abs(max), Math.Abs(min));
+                foreach (var item in edges)
+                {
+
+                    //Warning if true will be removed :D
+                    if (true || item.Label == 1 && item.Team == 0)
+                    {
+                        Pen pen;
+                        if (multiColor == false)
+                        {
+                            pen = new Pen(item.Frequency > 0 ? Color.FromArgb((int)(255 * item.Frequency * 1 / max), Color.Black) :
+                                                                Color.FromArgb((int)(255 * Math.Abs(item.Frequency) * 1 / max), Color.Red), 3);
+                        }
+                        else
+                        {
+                            pen = new Pen(Color.FromArgb((int)(255 * item.Frequency * 1 / max), this.edgeColorScheme[item.StrongestCluster]), 3);
+                        }
+
+                        Rectangle rect = new Rectangle((item.Row + 1) * rectWidth, (item.Col + 1) * rectWidth, rectWidth, rectWidth);
+                        g.FillRectangle(new SolidBrush(pen.Color), rect);
+                        rect = new Rectangle((item.Col + 1) * rectWidth, (item.Row + 1) * rectWidth, rectWidth, rectWidth);
+                        g.FillRectangle(new SolidBrush(pen.Color), rect);
+
+                    }
+                }
+            }
+            for (int index = 0; index < 22; index++)
+            {
+                brush = new SolidBrush(Color.Black);
+                Rectangle strRect = new Rectangle((index + 1) * rectWidth, 0, rectWidth + 40, rectWidth);
+                g.DrawString(index.ToString(), new Font("Tahoma", 8), brush, strRect);
+                strRect = new Rectangle(0, (index + 1) * rectWidth, rectWidth + 40, rectWidth);
+                g.DrawString(index.ToString(), new Font("Tahoma", 8), brush, strRect);
+            }
+            bitmap.Save(outputFolderPath + "\\image" + data.FrameNumber.ToString() + suffix + ".bmp");
+            Console.WriteLine("Done building image {0}", data.FrameNumber.ToString());
+            if (this.ImageBuilt != null)
+                this.ImageBuilt.Invoke(string.Format("Done building image {0}", data.FrameNumber.ToString()));
+            return data.FrameNumber.ToString() + ",pictures/Center" + Math.Abs(targetCenter).ToString() + "/image" + data.FrameNumber.ToString() + suffix + ".bmp";
+        }
+		public void BuildDominanceClusterImages(Teams team, string dataPath, string pointMapPath, string outputFolderPath)
+        {
+            DataReader reader = new DataReader(dataPath);
+            Dictionary<int, Frame> dataDict = reader.DataList.ToDictionary(item => item.FrameNumber, item => item);
+            Dictionary<int, Frame> clusterDict = new Dictionary<int, Frame>();
+            List<ClusterPoint> points = reader.ReadPointMap();
+            foreach (var item in points)
+            {
+                clusterDict.Add(item.ImageId, dataDict[item.ImageId]);
+            }
+            Field field = new Field();
+            Dictionary<int, ulong[]> dominanceMap = field.CalculateDominance(clusterDict, team);
+            foreach (var point in points)
+            {
+                if (dominanceMap.ContainsKey(point.ImageId) && dominanceMap[point.ImageId] != null)
+                {
+                    this.buildDominanceImage(clusterDict[point.ImageId], field.QueryPointGrid, dominanceMap[point.ImageId], outputFolderPath, team
+                    , point.ToString());
+                }
+
+            }//);
+
+        }
+
+		public static void BuildClusterDominanceImages(string dataPath, Teams team, string outputFolderPath = @"D:\Work\Football\Images\KeiserTest")
+        {
+            ImageBuilder builder = new ImageBuilder(1050,680);
+            builder.BuildDominanceClusterImages(team, dataPath, @"D:\Work\PythonWorkspace\Football\Clusters\PointMap.txt", outputFolderPath);
+        
+        }
+
+
+		     //private void openFileBtn_Click(object sender, RoutedEventArgs e)
+        //{
+        //    System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+        //    fileDialog.Title = "Game data file";
+        //    fileDialog.Multiselect = false;
+        //    System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+        //    if (result == System.Windows.Forms.DialogResult.OK)
+        //    {
+        //        if (fileDialog.CheckPathExists)
+        //            this.DataFilePath = fileDialog.FileName;
+        //    }
+        //}
+
+        //private void button1_Click(object sender, RoutedEventArgs e)
+        //{
+        //    System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+        //    fileDialog.Title = "Output file";
+        //    fileDialog.Multiselect = false;
+        //    System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+
+        //    if (result == System.Windows.Forms.DialogResult.OK)
+        //    {
+        //        if (fileDialog.CheckPathExists)
+        //            this.outputDestination = fileDialog.FileName;
+        //    }
+        //}
+
+		 private void openFileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            fileDialog.Title = "Game data matrix";
+            fileDialog.Multiselect = false;
+            System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    if (fileDialog.CheckPathExists)
+                        this.DataFilePath = fileDialog.FileName;
+                    DataReader reader = new DataReader();
+                    this.data = reader.ReadMatrix(this.DataFilePath);
+                    MessageBox.Show("Data successfully loaded");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            fileDialog.Title = "Output file";
+            fileDialog.Multiselect = false;
+            System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                if (fileDialog.CheckPathExists)
+                    this.outputDestination = fileDialog.FileName;
+            }
+        }
+
+
+		using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace VISParser
+{
+    //More or less useless now
+    public class PhaseBuilder
+    {
+        List<GamePhase> phases = new List<GamePhase>();
+        public List<GamePhase> BuildPhaseFromCluster(string dataPath, int centers)
+        {
+            GraphExtractor extractor = new GraphExtractor();
+            List<Dictionary<int, Graph>> clusters = new List<Dictionary<int, Graph>>();
+            List<GamePhase> result = new List<GamePhase>();
+            string clusterFilePath = string.Empty;
+            for (int curCenter = 0; curCenter < centers; curCenter++)
+            {
+                clusterFilePath = @"D:\Work\PythonWorkspace\Football\Clusters\Centers" + centers.ToString() + "Center" + curCenter.ToString() + ".txt";
+                List<Graph> graphs = extractor.ConvertStringToGraphs(dataPath, clusterFilePath);
+                clusters.Add(graphs.ToDictionary(item => item.TimeStamp));
+            }
+            List<Graph> allGraphs = extractor.ConvertStringToGraphs(dataPath);
+            allGraphs.OrderBy(graph => graph.TimeStamp);
+            int currentCluster = -1;
+            int lastCluster = -1;
+            int graphIndex = 0;
+            do
+            {
+                GamePhase newPhase = new GamePhase();
+                newPhase.Predecessor = lastCluster;
+                do
+                {
+                    bool graphFound = false;
+                    for (int index = 0; index < centers; index++)
+                    {
+                        if (clusters[index].ContainsKey(allGraphs[graphIndex].TimeStamp))
+                        {
+
+                            graphFound = true;
+                            if (currentCluster == -1)
+                            {
+                                currentCluster = index;
+                            }
+                            if (currentCluster == index)
+                            {
+                                Frame newFrame = new Frame();
+                                newFrame.FrameNumber = allGraphs[graphIndex].TimeStamp;
+                                newPhase.AddFrame(newFrame);
+                                lastCluster = currentCluster;
+                                newPhase.Current = currentCluster;
+                                graphIndex++;
+                            }
+                            else
+                            {
+                                newPhase.Successor = index;
+                                lastCluster = currentCluster;
+                                currentCluster = index;
+                            }
+                           
+
+                        }
+                        if (graphFound)
+                            break;
+                    }
+                    if (!graphFound)
+                    {
+                        Console.WriteLine("We couldn't find graph {0}", graphIndex);
+                        graphIndex++;
+                    }
+                }
+                while (lastCluster == currentCluster && graphIndex < allGraphs.Count);
+                if(newPhase.FrameCount > 0)
+                    result.Add(newPhase);
+            }
+            while (graphIndex < allGraphs.Count);
+            return result;
+        }
+    }
+}
+ public static void BuildGamePhases(string dataPath, int clusterCount)
+        {
+            PhaseBuilder phase = new PhaseBuilder();
+            List<GamePhase> gamePhases = phase.BuildPhaseFromCluster(dataPath, clusterCount);
+            Dictionary<string, List<GamePhase>> histogram = new Dictionary<string, List<GamePhase>>();
+            foreach (var item in gamePhases)
+            {
+                string local = item.ToString();
+                if (histogram.ContainsKey(local))
+                {
+                    histogram[local].Add(item);
+                }
+                else
+                {
+                    histogram.Add(local, new List<GamePhase>());
+                    histogram[local].Add(item);
+                }
+            }
+
+            foreach (var item in histogram)
+            {
+                Console.WriteLine(item.Key);
+                Console.WriteLine("Number of transitions = {0}", item.Value.Count);
+                Console.WriteLine("Max frames = {0}", item.Value.Max(x => x.FrameCount).ToString());
+                Console.WriteLine("Mean frames = {0}", item.Value.Average(x => x.FrameCount).ToString());
+
+            }
+
+        }
+
+		    public static List<Frame> TestPosesion(string dataPath)
+        {
+            DataReader reader = new DataReader(dataPath);
+            var data = reader.DataList;
+            PossessionParser pos = new PossessionParser(reader.DataList as List<Frame>);
+            pos.ParsePossession();
+            pos.TestMethodStability();
+            return pos.Data;
+
+        }
+		//TO DO: To be deleted
+        public double TestMethodStability()
+        {
+            double countDataPossession = 0;
+            double countDataOurMethodPossession = 0;
+            double percentage = 0;
+            double possessionCountOnes = 0;
+            double possessionCountZeros = 0;
+            double possesionCountMinusOnes = 0;
+            foreach (var item in this.data)
+            {
+                Ball ball = item.GetBall();
+                if (ball != null && ball.Possession != -1)
+                {
+                    countDataPossession++;
+                    if (ball.Possession == 1)
+                        possessionCountOnes++;
+                    else if (ball.Possession == 2)
+                        possessionCountZeros++;
+                }
+                else
+                {
+                    possesionCountMinusOnes++;
+                }
+                if (item.PossessionId != -1)
+                    countDataOurMethodPossession++;
+                if (ball != null && ball.Possession != -1 && item.PossessionId - 1 == ball.Possession)
+                    percentage++;
+            }
+            Console.WriteLine("We have discovered {0} posesion stamps they have {1} posesion times", countDataOurMethodPossession, countDataPossession);
+            Console.WriteLine("The difference is {0}", countDataPossession - countDataOurMethodPossession);
+            Console.WriteLine("The number of items we agree on is {0}", percentage);
+            Console.WriteLine("The percentage of items we agree on is {0}", percentage / countDataOurMethodPossession);
+            Console.WriteLine("The times they had a value of -1 = {0}, values of 1 = {1}, values of 0 = {2}", possesionCountMinusOnes, possessionCountOnes, possessionCountZeros);
+            return percentage / countDataOurMethodPossession;
+        }
+
+		 private FootballEvent possesionEvent(int currentPosId, int enterPossessionIndex, int ceasePossesionIndex)
+        {
+            FootballEvent result;
+            Ball ballStartPos = this.data[enterPossessionIndex].GetBall();
+            if (ballStartPos.IsOnField)
+            {
+                int countMaxTimeForBallNotMoving = int.MinValue;
+                for (int index = enterPossessionIndex; index <= ceasePossesionIndex; index++)
+                {
+                    int currentTimeForBallNotMoving = 0;
+                    Ball ball = this.data[index].GetBall();
+                    while (index < ceasePossesionIndex && !ball.IsMoving)
+                    {
+                        currentTimeForBallNotMoving++;
+                        index++;
+                    }
+                    if (currentTimeForBallNotMoving > countMaxTimeForBallNotMoving)
+                        countMaxTimeForBallNotMoving = currentTimeForBallNotMoving;
+                }
+                //Adding these events with null for the target player and recovering from it on the clean-up
+                //procedure... Kinda dirty but it works.
+                if (countMaxTimeForBallNotMoving > EventParser.StationaryBallLimit)
+                    return new OtherFixture(this.data[enterPossessionIndex].GetPlayerById(currentPosId), null, this.data[enterPossessionIndex], this.data[ceasePossesionIndex], false);
+                else
+                    return new SimplePossession(this.data[enterPossessionIndex].GetPlayerById(currentPosId), this.data[enterPossessionIndex], this.data[ceasePossesionIndex], false);
+            }
+            else
+            {
+                if (ballStartPos.IsOutOfFieldLength)
+                    result = new CornerKick(this.data[enterPossessionIndex].GetPlayerById(currentPosId), null, this.data[enterPossessionIndex], this.data[ceasePossesionIndex], false);
+                else
+                    result = new ThrowIn(this.data[enterPossessionIndex].GetPlayerById(currentPosId), null, this.data[enterPossessionIndex], this.data[ceasePossesionIndex], false);
+            }
+            return result;
+        }
+
+        private BallOffField parseBallOffField(int startFrameIndex)
+        {
+            int endFrameIndex = startFrameIndex;
+            Player actingPlayer = 
+            while (endFrameIndex + 1 < this.data.Count && !data[endFrameIndex].GetBall().IsOnField)
+            {
+                endFrameIndex++;
+            }
+            return new BallOffField();
+        }
+        private IList<FootballEvent> parseEvents()
+        {
+            IList<FootballEvent> result = new List<FootballEvent>();
+            for (int index = 0; index < this.data.Count; index++)
+            {
+                Player ceasePossesion = null;
+                Player passTo = null;
+                //the index at which the player first receives the ball
+                int enterPossessionIndex = -1;
+                int ceasePossesionIndex = -1;
+                int firstFrame = -1;
+                int lastFrame = -1;
+                while (index + 1 < this.data.Count &&
+                       this.data[index].PossessionId == -1)
+                {
+                    index++;
+                    if (!this.data[index].GetBall().IsOnField)
+                    {
+                        result.Add(this.parseBallOffField(index));
+                    }
+                }
+
+                int currentPosId = this.data[index].PossessionId;
+                enterPossessionIndex = index;
+                while (index + 1 < this.data.Count && this.data[index].PossessionId == currentPosId)
+                    index++;
+                ceasePossesionIndex = index - 1;
+                if (currentPosId != -1)
+                {
+                    if (enterPossessionIndex != ceasePossesionIndex)
+                        result.Add(this.possesionEvent(currentPosId, enterPossessionIndex, ceasePossesionIndex));
+                    ceasePossesion = this.data[ceasePossesionIndex].GetPlayerById(currentPosId);
+                }
+                firstFrame = ceasePossesionIndex;
+                while (index + 1 < this.data.Count && this.data[index].PossessionId == -1 && !this.data[index].GetBall().IsOutOfFieldLength)
+                    index++;
+                if (!this.data[index].GetBall().IsOutOfFieldLength)
+                {
+                    //   result.Add(new Shot(this.data[ceasePossesionIndex].GetPlayerById(this.data[ceasePossesionIndex].PossessionId),));
+                }
+                currentPosId = this.data[index].PossessionId;
+                if (currentPosId != -1)
+                {
+                    passTo = this.data[index].GetPlayerById(currentPosId);
+                    lastFrame = index;
+                }
+                if (ceasePossesion != null && passTo != null && lastFrame - firstFrame >= 5)
+                    result.Add(new Pass(ceasePossesion, passTo, this.data[firstFrame], this.data[lastFrame], false));
+            }
+            return result;
+        }
+        /// <summary>
+        /// The events I find first are too fined grained and I have to clean-up some events. For example
+        /// </summary>
+        /// <param name="dirtyList">Should be the list of very basic events found by the parseEvents method</param>
+        /// <returns></returns>
+        private IList<FootballEvent> cleanupEvents(IList<FootballEvent> dirtyList)
+        {
+            IList<FootballEvent> result = new List<FootballEvent>();
+            for (int index = 0; index < dirtyList.Count; index++)
+            {
+                if (dirtyList[index] is ThrowIn)
+                {
+                    var startThrowIn = dirtyList[index] as ThrowIn;
+                    while (index + 1 < dirtyList.Count && dirtyList[index + 1] is ThrowIn)
+                    {
+                        index++;
+                    }
+
+                    var endThrowIn = dirtyList[index] as ThrowIn;
+                    if (index + 1 < dirtyList.Count && dirtyList[index + 1] is Pass)
+                    {
+                        index++;
+                        var passTo = dirtyList[index] as Pass;
+                        result.Add(new ThrowIn(endThrowIn.ActingPlayer, passTo.TargetPlayer, startThrowIn.StartFrame, passTo.EndFrame, false));
+                    }
+                }
+                else if (dirtyList[index] is OtherFixture)
+                {
+                    var startOtherFixture = dirtyList[index] as OtherFixture;
+                    while (index + 1 < dirtyList.Count && dirtyList[index + 1] is OtherFixture)
+                    {
+                        index++;
+                    }
+                    var endOtherFixture = dirtyList[index] as OtherFixture;
+                    if (index + 1 < dirtyList.Count && dirtyList[index + 1] is Pass)
+                    {
+                        index++;
+                        var passTo = dirtyList[index] as Pass;
+                        result.Add(new OtherFixture(endOtherFixture.ActingPlayer, passTo.TargetPlayer, startOtherFixture.StartFrame, passTo.EndFrame, false));
+                    }
+                }
+                else if (dirtyList[index] is CornerKick)
+                {
+                    var startCornerKick = dirtyList[index] as CornerKick;
+                    while (index + 1 < dirtyList.Count && dirtyList[index + 1] is OtherFixture)
+                    {
+                        index++;
+                    }
+                    var endCornerKick = dirtyList[index] as CornerKick;
+                    if (index + 1 < dirtyList.Count && dirtyList[index + 1] is Pass)
+                    {
+                        index++;
+                        var passTo = dirtyList[index] as Pass;
+                        result.Add(new CornerKick(endCornerKick.ActingPlayer, passTo.TargetPlayer, startCornerKick.StartFrame, passTo.EndFrame, false));
+                    }
+                }
+                else
+                {
+                    result.Add(dirtyList[index]);
+                }
+            }
+            return result;
+        }

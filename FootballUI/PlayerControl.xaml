@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="FootballUI.PlayerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Height="19px" Width="19px">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="19"/>
+        </Grid.RowDefinitions>
+        <Border Name="playerBorder" Grid.Row="0" Grid.Column="0" Width="19" Height="19"  BorderThickness="2">
+            <TextBlock Name="playerID" Text="" Foreground="Black" TextAlignment="Center"  Height="15" VerticalAlignment="Top" MouseLeftButtonDown="playerID_MouseLeftButtonDown" MouseLeftButtonUp="playerBorder_MouseLeftButtonUp">
+                <TextBlock.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Name="passesTo" Header="_Passes To">
+                            <MenuItem Name ="passesToPlayer" Header="_Player" Click="passesToPlayer_Click"/>
+                            <MenuItem Name ="passesToSAR" Header="_SAR" Click="passesToSAR_Click"/>
+                            <MenuItem Name= "passesLength" Header="_Passes By Length" Click="passesLength_Click"/>
+                            <MenuItem Name="assignRoleMenu" Header="_Assign Role">
+                                <MenuItem Name="attackRole" Header="_Attacker" Click="changeRole_OnClick" Tag="attacker"></MenuItem>
+                                <MenuItem Name="defenderRole" Header="_Defender" Click="changeRole_OnClick" Tag="defender"></MenuItem>
+                                <MenuItem Name="goalKeeperRole" Header="_Goal Keeper" Click="changeRole_OnClick" Tag="goalKeeper"></MenuItem>
+                                <MenuItem Name="midfilderRole" Header="_Midfielder" Click="changeRole_OnClick" Tag="midfielder"></MenuItem>
+                            </MenuItem>
+                        </MenuItem>
+                    </ContextMenu>
+                </TextBlock.ContextMenu>
+            </TextBlock>
+        </Border>
+    </Grid>
+</UserControl>

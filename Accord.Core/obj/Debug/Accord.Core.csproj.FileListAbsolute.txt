@@ -1,0 +1,10 @@
+E:\Work\Debug\Accord.dll
+E:\Work\Debug\Accord.pdb
+E:\Work\RawDataParser\Accord.Core\obj\Debug\Accord.Core.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\Accord.Core\obj\Debug\Accord.dll
+E:\Work\RawDataParser\Accord.Core\obj\Debug\Accord.pdb
+D:\Debug\Accord.dll
+D:\Debug\Accord.pdb
+D:\RawDataParser\Accord.Core\obj\Debug\Accord.Core.csprojResolveAssemblyReference.cache
+D:\RawDataParser\Accord.Core\obj\Debug\Accord.dll
+D:\RawDataParser\Accord.Core\obj\Debug\Accord.pdb

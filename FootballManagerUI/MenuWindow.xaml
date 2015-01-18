@@ -1,0 +1,11 @@
+﻿<Window x:Class="FootballManagerUI.MenuWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MenuWindow" Height="300" Width="300">
+    <Grid>
+        <Button Content="Build Images" Height="23" HorizontalAlignment="Left" Margin="0,12,0,0" Name="buildImages" VerticalAlignment="Top" Width="278" Click="buildImages_Click" />
+        <Button Content="View PCA Results" Height="23" HorizontalAlignment="Left" Margin="0,41,0,0" Name="viewPCABtn" VerticalAlignment="Top" Width="278" Click="viewPCABtn_Click" />
+        <Button Content="Apply Kernels" Height="23" HorizontalAlignment="Left" Margin="0,70,0,0" Name="kernelBtn" VerticalAlignment="Top" Width="278" Click="kernelBtn_Click" />
+        <Button Content="Apply PCA/Cluster" Height="23" HorizontalAlignment="Left" Margin="0,99,0,0" Name="clusterBtn" VerticalAlignment="Top" Width="278" Click="clusterBtn_Click" />
+    </Grid>
+</Window>

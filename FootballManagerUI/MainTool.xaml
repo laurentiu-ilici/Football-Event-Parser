@@ -1,0 +1,62 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="FootballManagerUI.MainWindow"
+        Title="Main Tool" Height="857" Width="1550" Closing="Window_Closing">
+    <Window.Resources>
+        <ImageBrush x:Key="Backwards" ImageSource="Resources/Backwards.png"/>
+        <ImageBrush x:Key="Forwards" ImageSource="Resources/Forwards.png"/>
+        <ImageBrush x:Key="Pause" ImageSource="Resources/Pause.png"/>
+        <ImageBrush x:Key="Play" ImageSource="Resources/Play.png"/>
+    </Window.Resources>
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60*"/>
+            <ColumnDefinition Width="40*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <Border  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="Black" BorderThickness="1">
+            <Image x:Name="currentFieldConfig"/>
+        </Border>
+        <Border x:Name="minimapBorder" Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Azure" BorderBrush="Black" BorderThickness="2" />
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Stretch"  Grid.Row="2" Name="axisABorder" VerticalAlignment="Stretch" Grid.ColumnSpan="6" />
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Stretch"  Grid.Row="3" Name="axisBBorder"  VerticalAlignment="Stretch" Grid.ColumnSpan="6"/>
+        <Menu Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="1" Grid.Row="0"  HorizontalAlignment="Stretch" Name="mainMenu" VerticalAlignment="Stretch">
+            <MenuItem Header="_File" Name="fileMenu" FontSize="15" VerticalAlignment="Stretch">
+                <MenuItem Header="_New Project" Name="newProjectMenu" Click="newProjectMenu_Click"/>
+                <MenuItem Header="_Save Project" Name="saveProjectMenu" Click="saveProjectMenu_Click"/>
+                <MenuItem Header="_Open Project" Name="openProjectMenu" Click="openProjectMenu_Click"/>
+                <MenuItem Header="_Set Image Path" Click="setImages_Click" Name="setPathMenu"/>
+                <MenuItem Header="_Open PCA Result" Click="open_Click" Name="openProjMenu"/>
+            </MenuItem>
+            <MenuItem Header="_Current Project" FontSize="15">
+                <MenuItem Header="_Build Images" Name="buildImagesMenu" Click="buildImagesMenu_Click"/>
+                <MenuItem Header="_Add Kernel" Name="addKernelMenu" Click="addKernelMenu_Click"/>
+                <MenuItem Header="_Cluster Data" Name="clusterDataMenu" Click="clusterDataMenu_Click"/>
+            </MenuItem>
+            <MenuItem Header="Recent Projects" FontSize="15" VerticalAlignment="Stretch" />
+            <Separator Name="controlsSeparator" Width="100"/>
+            <MenuItem Name="backwardsBtn" ToolTip="Last Image" Click="previousButton_Click" Background="{DynamicResource Backwards}" Height="30" Width="30" OpacityMask="{DynamicResource Backwards}"/>
+            <MenuItem Name="playBtn" Click="play_Click" Background="{DynamicResource Play}" Height="30" Width="30" OpacityMask="{DynamicResource Play}"/>
+            <MenuItem Name="forwardsBtn" ToolTip="Next Image" Click="nextButton_Click" Background="{DynamicResource Forwards}" Height="30" Width="30" OpacityMask="{DynamicResource Forwards}"/>
+            <Separator Name="resultsSeparator" Width="20"/>
+            <ListBox Name="kernelsList" Width="200"/>
+            <ListBox Name="mapsList" Width="200"/>
+        </Menu>
+        <Grid Grid.Column="1" Grid.Row="0" Name="axisGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <RadioButton Content="Axis (0,1)"  FontSize="18" Grid.Column="0" Name="choice1" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  GroupName="axisChooser" Tag="0 1" Checked="RadioButton_Checked"  IsChecked="True"/>
+            <RadioButton Content="Axis (0,2)" FontSize="18" Grid.Column="1" Name="choice2"  VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  GroupName="axisChooser" Tag="0 2" Checked="RadioButton_Checked" />
+            <RadioButton Content="Axis (1,2)" FontSize="18"  Grid.Column="2" Name="choice3"  VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  GroupName="axisChooser" Tag="1 2" Checked="RadioButton_Checked" />
+        </Grid>
+    </Grid>
+</Window>

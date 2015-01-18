@@ -1,0 +1,49 @@
+﻿<Window x:Class="FootballManagerUI.KernelComputerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Kernel Computer" Height="300" Width="686">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="111*" />
+            <ColumnDefinition Width="167"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <ListBox Name="statusListBox" Grid.Column="0" Grid.Row="0" />
+        <StackPanel  HorizontalAlignment="Left" Name="optionsPanel" VerticalAlignment="Top"  Grid.Column="1" Grid.Row="0" Width="167">
+           <!-- <Button Name="openFileBtn" Content="Open File" ToolTip="Opens data a game data file!" Height="24" Click="openFileBtn_Click"/>
+            <Button Content="Set Destination" ToolTip="Sets the folder for the output of the algorithms!" Height="24" Name="button1" Click="button1_Click" />-->
+            <Label Name="samplesCountLabel" Content="Number of frames to sample:"/>
+            <TextBox Name="samplesCountBox" ToolTip="Please select the number of frames to sample from the half. Higher means more computation time!
+                     We recommend a number lower than 2000"/>
+            <RadioButton Content="RBF Kernel" Tag="rbf" Checked="kernelBtn_Checked" ToolTip ="Computes the RBF Kernel for the data points, based on the distances between players!" Height="16" Name="rbfKernelBtn" GroupName="mainOptions" />
+            <Label Content="Gamma" Height="28" Name="gammaLabel" Width="111" />
+            <TextBox Height="23" Name="gammaValue" ToolTip="Sets the gamma parameter of the kernel to the specified value!" IsEnabled="False" Width="110" />
+            <RadioButton Content="Tanimoto Kenrel" Height="16" Name="tanimotoBtn" Tag="tanimoto" Checked="kernelBtn_Checked" GroupName="mainOptions" />
+           
+            <RadioButton Content="On Graphs" Height="16" Name="onGraphsBtn" GroupName="tanimotoOptions" IsEnabled="False" Checked="onGraphsBtn_Checked"  Unchecked="onGraphsBtn_Unchecked"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <RadioButton Name="negativeEdgesBtn" ToolTip="Runs the algorithm using only the edges between opposing teams!" Content="Neg Edges" IsEnabled="False" GroupName="edgeOptions" Grid.Column="0" />
+                <RadioButton Name="allEdgesBtn" IsEnabled="False" ToolTip="Runs the algorithm using all the edges between opposing teams!" GroupName="edgeOptions" Content="All Edges" Grid.Column="1"  />
+            </Grid>
+            <RadioButton Content="On Query Points" Height="16" Name="onQueryPointsBtn" GroupName="tanimotoOptions" IsEnabled="False" />
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <RadioButton Name="firstHalf" Grid.Column="0" GroupName="periodChooser" Tag="1" IsChecked="True" Content="1st Half"/>
+                <RadioButton Name="secondHalf" Grid.Column="1" GroupName="periodChooser" Tag="2" Content="2nd Half"/>
+            </Grid>
+            <Button Content="Compute" Click="computeBtn_Click" ToolTip="Computes the Kernel matrix according to the settings!" Height="23" HorizontalAlignment="Left" IsEnabled="False" Name="computeBtn" VerticalAlignment="Top" Width="111"/>
+        </StackPanel>
+        <ProgressBar Name="buildProgress" Height="20" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Minimum="0"/>
+        <TextBlock Name="progressText" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Text="0%" HorizontalAlignment="Center" />       
+    </Grid>
+</Window>

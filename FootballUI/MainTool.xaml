@@ -1,0 +1,162 @@
+﻿<Window x:Class="FootballUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="382" Width="1030" Closed="Window_Closed">
+    <Window.Resources>
+        <ImageBrush x:Key="Backwards" ImageSource="Resources/Backwards.png"/>
+        <ImageBrush x:Key="Forwards" ImageSource="Resources/Forwards.png"/>
+        <ImageBrush x:Key="Pause" ImageSource="Resources/Pause.png"/>
+        <ImageBrush x:Key="Play" ImageSource="Resources/Play.png"/>
+        <Style x:Key="listboxStyle">
+            <Style.Resources>
+                <!-- Background of selected item when focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Red" />
+                <!-- Background of selected item when not focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Green" />
+              
+            </Style.Resources>
+        </Style>
+    </Window.Resources>
+
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60*"/>
+                <ColumnDefinition Width="40*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <StatusBar Grid.Row="3">
+                <Label Name="statusLabel" Content="Idle" Grid.Row="2" Width="150"/>
+                <Separator/>
+                <Label Width ="200" HorizontalAlignment="Stretch" Content="Frame: 0/0" Name="frameCounterLabel"/>
+            </StatusBar>
+            <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkGray"/>
+            <Viewbox Name="mainView"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2">
+                <Border Name="fieldBorder" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Width="1070" Height="700" BorderBrush="DarkGray" BorderThickness="10">
+                </Border>
+            </Viewbox>
+            <Menu Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="1" Grid.Row="0"  HorizontalAlignment="Stretch" Name="mainMenu" VerticalAlignment="Stretch">
+                <MenuItem Header="_Project">
+                    <MenuItem Header="_New Project" Name="newProjectMenu" Click="newProjectMenu_Click"/>
+                    <MenuItem Header="_Save Project" Name="saveProjectMenu" Click="saveProjectMenu_Click"/>
+                    <MenuItem Header="_Open Project" Name="openProjectMenu" Click="openProjectMenu_Click"/>
+                    <MenuItem Header="_Load Clustering" Name="loadClustering" Click="loadClustering_Click_1"/>
+                </MenuItem>
+                <MenuItem Header="_Settings" Name="settings" Click="settings_Click"/>
+                <Separator Name="controlsSeparator" Width="50" Visibility="Hidden"/>
+                <MenuItem Name="backwardsBtn" ToolTip="Last Image" Click="backwardsBtn_Click" Background="{DynamicResource Backwards}" Height="30" Width="30" OpacityMask="{DynamicResource Backwards}"/>
+                <MenuItem Name="playBtn" Click="playBtn_Click" Background="{DynamicResource Play}" Height="30" Width="30" OpacityMask="{DynamicResource Play}"/>
+                <MenuItem Name="forwardsBtn" ToolTip="Next Image" Click="forwardsBtn_Click" Background="{DynamicResource Forwards}" Height="30" Width="30" OpacityMask="{DynamicResource Forwards}"/>
+            </Menu>
+            <Slider IsSnapToTickEnabled="True" TickPlacement="Both" VerticalAlignment="Stretch" ValueChanged="movieSlider_ValueChanged" PreviewMouseDown="movieSlider_MouseDown"  HorizontalAlignment="Stretch" Name="movieSlider" Grid.Row="4" Grid.ColumnSpan="2" />
+            <TabControl Name="queryTabs" SelectionChanged="queryTabs_SelectionChanged"  Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <TabItem Header="All Events" Name="allEventsTab" ToolTip="Displays all events!" Width="100">
+                </TabItem>
+                <TabItem Header="Filter Events" Name="filterEventsTab" Width="100">
+                    <Grid Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" Name="sectionGrid">
+                        <ComboBox Name="filtersCombo"  SelectionChanged="filtersCombo_SelectionChanged" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ComboBoxItem Name="defaultSelection" Content="Available Filters" IsSelected="True"/>
+                            <ComboBoxItem>
+                                <CheckBox Name="cornerKickCheck" Content="Corner Kicks" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows corner kicks!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="goalKickCheck" Content="Goal Kicks" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows goal kicks!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="offsideCheck" Content="Offside Kicks" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows offsides!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="othersCheck" Content="Other Fixtures" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows other fixtures!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="passesCheck" Content="Passes" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows passes!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="possessionCheck" Content="Possession" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows possession!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="shotCheck" Content="Shots" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows shots!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="throwinCheck" Content="Throw-ins" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows throw-ins!"/>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <CheckBox Name="unknownCheck" Content="Unkown Events" Unchecked="filterCheck_Changed" Checked="filterCheck_Changed" ToolTip="Shows deleted items!"/>
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="User Queries" Name="customQuery" Width="100">
+                </TabItem>
+                <TabItem Header="Complex Events" Name="complexQuery" Width="100"/>
+            </TabControl>
+            <Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height=".5*"/>
+                    <RowDefinition Height=".5*"/>
+                </Grid.RowDefinitions>
+                <Border Name="minimapBorder" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <ListView Grid.Column="1" SelectionMode="Extended" Grid.Row="1" Grid.RowSpan="2"  SelectionChanged="eventList_SelectionChanged" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  Name="eventList">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{Binding EventImage}" Grid.Column="0" Height="40" Width="40"/>
+                                <Rectangle Fill="{Binding PossesionColor}" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                                <TextBlock Text="{Binding DisplayText}"  Grid.Column="3" Foreground="{Binding EventColor}" HorizontalAlignment="Stretch">
+                                    <TextBlock.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="_Edit Item" Name="editEvent" ToolTip="Editing is only possible on unknown events!" IsEnabled="{Binding IsUserDefinedEvent}" Click="editEvent_Click"/>
+                                            <MenuItem Header="_Delete Item" Name="deleteEvent" ToolTip="Converts the event to an Unknown Event type, making it editable!" Click="deleteEvent_Click"/>
+                                            <MenuItem Header="_Clear Selection" Name="clearSelectedEvents" Click="clearSelectedEvents_Click"/>
+                                            <MenuItem Header="_Show ComplexEvent" Name="showComplexEvent" Click="showComplexEvent_Click"/>
+                                        </ContextMenu>
+                                    </TextBlock.ContextMenu>
+                                </TextBlock>
+                                <CheckBox Grid.Column="2" Grid.Row="0" Checked="eventChecked" Unchecked="eventUnchecked" IsChecked="{Binding IsUserMarked}" ToolTip="Mark for further processing!" />
+                                <ListView Grid.ColumnSpan="6" Grid.Row="1" Name="subEventlist" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Visibility="Collapsed">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="40"/>
+                                                    <ColumnDefinition Width="10"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image Source="{Binding .EventImage}" Grid.Column="0" Grid.Row="0" Height="40" Width="40"/>
+                                                <Rectangle Fill="{Binding .PossesionColor}" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                                                <TextBlock Text="{Binding .DisplayText}"  Grid.Column="3" Grid.Row="0"  Foreground="{Binding EventColor}" HorizontalAlignment="Stretch">
+                                                    <TextBlock.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="_Edit Item" Name="editEvent" ToolTip="Editing is only possible on unknown events!" IsEnabled="{Binding IsUserDefinedEvent}" Click="editEvent_Click"/>
+                                                            <MenuItem Header="_Delete Item" Name="deleteEvent" ToolTip="Converts the event to an Unknown Event type, making it editable!" Click="deleteEvent_Click"/>
+                                                            <MenuItem Header="_Clear Selection" Name="clearSelectedEvents" Click="clearSelectedEvents_Click"/>
+                                                            <!--<MenuItem Header="_Show ComplexEvent" Name="showComplexEvent" Click="showComplexEvent_Click"/>-->
+                                                        </ContextMenu>
+                                                    </TextBlock.ContextMenu>
+                                                </TextBlock>
+                                                <CheckBox Grid.Column="2" Grid.Row="0" IsChecked="{Binding .IsUserMarked}" ToolTip="Mark for further processing!" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

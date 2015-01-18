@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="FootballUI.FootballField"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="680" d:DesignWidth="1050">
+    <UserControl.Resources>
+        <ImageBrush x:Key="FieldBackground" ImageSource="Resources/FieldBackground.bmp"/>
+        
+    </UserControl.Resources>
+    <Grid>
+        <Canvas Name="field" Height="680" Width="1050" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource FieldBackground}" MouseLeftButtonUp="field_MouseLeftButtonUp" SizeChanged="field_SizeChanged" MouseLeftButtonDown="field_LeftMouseDown" MouseMove="field_LeftMouseMove">
+            <Canvas.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Name="clearEventsBtn" Header="_Clear Events" Click="clearEvents_Click"/>
+                </ContextMenu>
+            </Canvas.ContextMenu>
+            
+        </Canvas>
+    </Grid>
+</UserControl>

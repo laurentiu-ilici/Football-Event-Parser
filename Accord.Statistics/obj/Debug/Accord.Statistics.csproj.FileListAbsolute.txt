@@ -1,0 +1,10 @@
+E:\Work\Debug\Accord.Statistics.dll
+E:\Work\Debug\Accord.Statistics.pdb
+E:\Work\RawDataParser\Accord.Statistics\obj\Debug\Accord.Statistics.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\Accord.Statistics\obj\Debug\Accord.Statistics.dll
+E:\Work\RawDataParser\Accord.Statistics\obj\Debug\Accord.Statistics.pdb
+D:\Debug\Accord.Statistics.dll
+D:\Debug\Accord.Statistics.pdb
+D:\RawDataParser\Accord.Statistics\obj\Debug\Accord.Statistics.csprojResolveAssemblyReference.cache
+D:\RawDataParser\Accord.Statistics\obj\Debug\Accord.Statistics.dll
+D:\RawDataParser\Accord.Statistics\obj\Debug\Accord.Statistics.pdb

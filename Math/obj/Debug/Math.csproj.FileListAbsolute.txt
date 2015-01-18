@@ -1,0 +1,12 @@
+E:\Work\Release\AForge.Math.dll
+E:\Work\Release\AForge.Math.pdb
+E:\Work\Release\AForge.Math.xml
+E:\Work\RawDataParser\Math\obj\Debug\Math.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\Math\obj\Debug\AForge.Math.dll
+E:\Work\RawDataParser\Math\obj\Debug\AForge.Math.pdb
+D:\Release\AForge.Math.dll
+D:\Release\AForge.Math.pdb
+D:\Release\AForge.Math.xml
+D:\RawDataParser\Math\obj\Debug\Math.csprojResolveAssemblyReference.cache
+D:\RawDataParser\Math\obj\Debug\AForge.Math.dll
+D:\RawDataParser\Math\obj\Debug\AForge.Math.pdb

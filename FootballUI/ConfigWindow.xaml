@@ -1,0 +1,34 @@
+﻿<Window x:Class="FootballUI.ConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ConfigWindow" Height="300" Width="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Thread sleep value: " />
+        <TextBox Grid.Row="0" Grid.Column="1" Name="sleepValueText"/>
+        <TextBlock Grid.Row="1" Text="Fade-in number frames: " />
+        <TextBox Grid.Row="1" Grid.Column="1" Name="fadeInText"/>
+        <TextBlock Grid.Row="2" Text="Max distance to ball: " />
+        <TextBox Grid.Row="2" Grid.Column="1" Name="maxDistanceText"/>
+        <TextBlock Grid.Row="3" Text="Max stationary ball: " />
+        <TextBox Grid.Row="3" Grid.Column="1" Name="stationaryBallText"/>
+        <TextBlock Grid.Row="4" Text="Max ball height: " />
+        <TextBox Grid.Row="4" Grid.Column="1" Name="maxBallHeightText"/>
+        <TextBlock Grid.Row="5" Text="Max ball angle: " />
+        <TextBox Grid.Row="5" Grid.Column="1" Name="maxAcceptedAngleText"/>
+        <Button Content="Save changes!" Grid.Row="7" Grid.ColumnSpan="2" Name="saveBtn" Click="saveBtn_Click" />
+    </Grid>
+</Window>

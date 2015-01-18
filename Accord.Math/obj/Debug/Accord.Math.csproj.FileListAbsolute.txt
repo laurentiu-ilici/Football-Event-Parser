@@ -1,0 +1,10 @@
+E:\Work\Debug\Accord.Math.dll
+E:\Work\Debug\Accord.Math.pdb
+E:\Work\RawDataParser\Accord.Math\obj\Debug\Accord.Math.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\Accord.Math\obj\Debug\Accord.Math.dll
+E:\Work\RawDataParser\Accord.Math\obj\Debug\Accord.Math.pdb
+D:\Debug\Accord.Math.dll
+D:\Debug\Accord.Math.pdb
+D:\RawDataParser\Accord.Math\obj\Debug\Accord.Math.csprojResolveAssemblyReference.cache
+D:\RawDataParser\Accord.Math\obj\Debug\Accord.Math.dll
+D:\RawDataParser\Accord.Math\obj\Debug\Accord.Math.pdb

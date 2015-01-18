@@ -1,0 +1,5 @@
+E:\Work\RawDataParser\DelaunayTriangulator\bin\Debug\DelaunayTriangulator.dll
+E:\Work\RawDataParser\DelaunayTriangulator\bin\Debug\DelaunayTriangulator.pdb
+E:\Work\RawDataParser\DelaunayTriangulator\obj\Debug\DelaunayTriangulator.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\DelaunayTriangulator\obj\Debug\DelaunayTriangulator.dll
+E:\Work\RawDataParser\DelaunayTriangulator\obj\Debug\DelaunayTriangulator.pdb

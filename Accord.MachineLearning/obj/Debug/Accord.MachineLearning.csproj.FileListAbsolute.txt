@@ -1,0 +1,10 @@
+E:\Work\Debug\Accord.MachineLearning.dll
+E:\Work\Debug\Accord.MachineLearning.pdb
+E:\Work\RawDataParser\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
+E:\Work\RawDataParser\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb
+D:\Debug\Accord.MachineLearning.dll
+D:\Debug\Accord.MachineLearning.pdb
+D:\RawDataParser\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.csprojResolveAssemblyReference.cache
+D:\RawDataParser\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
+D:\RawDataParser\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb

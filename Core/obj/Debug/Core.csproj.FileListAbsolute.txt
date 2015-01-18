@@ -1,0 +1,12 @@
+E:\Work\Release\AForge.dll
+E:\Work\Release\AForge.pdb
+E:\Work\Release\AForge.xml
+E:\Work\RawDataParser\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
+E:\Work\RawDataParser\Core\obj\Debug\AForge.dll
+E:\Work\RawDataParser\Core\obj\Debug\AForge.pdb
+D:\Release\AForge.dll
+D:\Release\AForge.pdb
+D:\Release\AForge.xml
+D:\RawDataParser\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
+D:\RawDataParser\Core\obj\Debug\AForge.dll
+D:\RawDataParser\Core\obj\Debug\AForge.pdb
